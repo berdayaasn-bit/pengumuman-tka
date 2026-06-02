@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengumuman TKA - SDN Cicadas</title>
+    <style>
+        body {
+            background-color: #00BFFF; /* Warna biru cerah */
+            font-family: Arial, sans-serif;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            margin: 20px 0;
+        }
+        img.logo {
+            max-width: 120px;
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-size: 18px;
+            color: #005bb5;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #b3e6ff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0073e6;
+        }
+        button {
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        .hidden {
+            display: none;
+        }
+        .score-box {
+            background-color: #e6f7ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #99d6ff;
+            text-align: left;
+        }
+        .score-box h3 {
+            margin: 0 0 10px 0;
+            color: #005bb5;
+            border-bottom: 2px solid #b3e6ff;
+            padding-bottom: 5px;
+        }
+        .score-box p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+        .apresiasi {
+            background-color: #f0fdf4;
+            color: #166534;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #bbf7d0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="login-section">
+        <img src="[IMG]" alt="Logo Sekolah" class="logo">
+        <h1>PENGUMUMAN HASIL TES KEMAMPUAN AKADEMIK - TKA<br>SD NEGERI CICADAS</h1>
+        <p style="font-size: 14px; color: #666;">Silakan login menggunakan kredensial Anda.</p>
+        <input type="text" id="nisn" placeholder="Masukkan Nomor NISN">
+        <input type="password" id="password" placeholder="Tanggal Lahir (contoh: 17 Desember 2013)">
+        <button onclick="login()">Cek Hasil TKA</button>
+        <p id="error-message" style="color: red; display: none; font-size: 14px; margin-top: 15px;">NISN atau Tanggal Lahir tidak ditemukan! Pastikan format tanggal lahir benar.</p>
+    </div>
+
+    <div class="container hidden" id="result-section">
+        <img src="[IMG]" alt="Logo Sekolah" class="logo">
+        <h1>HASIL TES KEMAMPUAN AKADEMIK</h1>
+        <h2 id="student-name" style="color: #333; margin-bottom: 5px; font-size: 20px;"></h2>
+        <p style="font-size: 14px; color: #666; margin-top: 0; margin-bottom: 15px;">NISN: <span id="student-nisn"></span></p>
+        
+        <div class="apresiasi">
+            Selamat! Kami sangat bangga dan mengapresiasi kerja keras serta dedikasi ananda dalam menyelesaikan Tes Kemampuan Akademik ini. Teruslah bersemangat dalam belajar!
+        </div>
+        
+        <div class="score-box">
+            <h3>Matematika</h3>
+            <p>Nilai: <strong id="score-math"></strong></p>
+            <p>Kategori: <strong id="cat-math"></strong></p>
+        </div>
+        
+        <div class="score-box">
+            <h3>Bahasa Indonesia</h3>
+            <p>Nilai: <strong id="score-indo"></strong></p>
+            <p>Kategori: <strong id="cat-indo"></strong></p>
+        </div>
+        
+        <button onclick="logout()" style="background-color: #ff4d4d;">Kembali ke Halaman Login</button>
+    </div>
+
+    <script>
+        // Data resmi dari DKH TKA Kementrian
+        const dataSiswa = [
+    { nisn: "3134223793", tglLahir: "2013-12-17", nama: "Muhamad Azka", nilaiMtk: "53.33", katMtk: "Memadai", nilaiIndo: "70.00", katIndo: "Memadai" },
+    { nisn: "0131625350", tglLahir: "2013-07-20", nama: "Siti Kaila Sabiili Sabtiyyah", nilaiMtk: "36.67", katMtk: "Memadai", nilaiIndo: "66.67", katIndo: "Memadai" },
+    { nisn: "3135044214", tglLahir: "2013-06-12", nama: "Muhamad Fajar Annazar Salim", nilaiMtk: "63.33", katMtk: "Baik", nilaiIndo: "90.00", katIndo: "Baik" },
+    { nisn: "3144336537", tglLahir: "2014-01-01", nama: "Siti Anisah", nilaiMtk: "36.67", katMtk: "Memadai", nilaiIndo: "60.00", katIndo: "Memadai" },
+    { nisn: "0133071437", tglLahir: "2013-08-07", nama: "Muhamad Farhan Fadilah", nilaiMtk: "53.33", katMtk: "Memadai", nilaiIndo: "63.33", katIndo: "Memadai" },
+    { nisn: "3115744350", tglLahir: "2014-08-24", nama: "Indah Dewi Lestari", nilaiMtk: "70.00", katMtk: "Baik", nilaiIndo: "66.67", katIndo: "Memadai" },
+    { nisn: "0142011232", tglLahir: "2014-02-19", nama: "UFAIRA NURAFIFAH MAEDI", nilaiMtk: "33.33", katMtk: "Memadai", nilaiIndo: "70.00", katIndo: "Memadai" },
+    { nisn: "0135639053", tglLahir: "2013-03-20", nama: "TIANA ANGGRAENI", nilaiMtk: "26.67", katMtk: "Kurang", nilaiIndo: "80.00", katIndo: "Baik" },
+    { nisn: "3135155289", tglLahir: "2013-11-07", nama: "ALARIC PRATAMA FULVIANSYAH", nilaiMtk: "83.33", katMtk: "Baik", nilaiIndo: "86.67", katIndo: "Baik" },
+    { nisn: "0134580949", tglLahir: "2013-12-08", nama: "MUHAMAD AKBARI RAIKAL GUNAWAN", nilaiMtk: "43.33", katMtk: "Memadai", nilaiIndo: "80.00", katIndo: "Baik" },
+    { nisn: "0134138308", tglLahir: "2013-08-14", nama: "RAISA SALWA", nilaiMtk: "33.33", katMtk: "Memadai", nilaiIndo: "60.00", katIndo: "Memadai" },
+    { nisn: "3130768909", tglLahir: "2013-05-15", nama: "MUHAMAD JAYYID HASANI", nilaiMtk: "53.33", katMtk: "Memadai", nilaiIndo: "56.67", katIndo: "Memadai" },
+    { nisn: "3143512440", tglLahir: "2014-11-27", nama: "IBRA FIRMANSYAH", nilaiMtk: "43.33", katMtk: "Memadai", nilaiIndo: "33.33", katIndo: "Kurang" },
+    { nisn: "0139562302", tglLahir: "2013-10-17", nama: "Khoirul Rizki Haikal", nilaiMtk: "30.00", katMtk: "Kurang", nilaiIndo: "23.33", katIndo: "Kurang" },
+    { nisn: "0136212212", tglLahir: "2013-02-05", nama: "Irgi Muldan Febriandi", nilaiMtk: "43.33", katMtk: "Memadai", nilaiIndo: "53.33", katIndo: "Memadai" },
+    { nisn: "0144149501", tglLahir: "2014-03-09", nama: "SITI NAFISAH TSANIYYAH", nilaiMtk: "60.00", katMtk: "Baik", nilaiIndo: "80.00", katIndo: "Baik" },
+    { nisn: "0136658673", tglLahir: "2013-06-25", nama: "MUHAMAD FADLAN", nilaiMtk: "33.33", katMtk: "Memadai", nilaiIndo: "70.00", katIndo: "Memadai" },
+    { nisn: "0149530162", tglLahir: "2014-03-18", nama: "NADIFHA FIRDHANIA NUR SALSABILA", nilaiMtk: "50.00", katMtk: "Memadai", nilaiIndo: "80.00", katIndo: "Baik" },
+    { nisn: "0132135948", tglLahir: "2013-04-03", nama: "NENG SHIFA APRILIANI", nilaiMtk: "40.00", katMtk: "Memadai", nilaiIndo: "73.33", katIndo: "Memadai" },
+    { nisn: "3135739789", tglLahir: "2013-05-11", nama: "GALANG MIRZA", nilaiMtk: "36.67", katMtk: "Memadai", nilaiIndo: "36.67", katIndo: "Kurang" }
+];
+
+        function login() {
+            const inputNisn = document.getElementById('nisn').value.trim();
+            const inputPass = document.getElementById('password').value.trim();
+            const errorMessage = document.getElementById('error-message');
+
+            // Cek kesesuaian NISN dan Tanggal Lahir (mengabaikan huruf besar/kecil dan spasi berlebih)
+            const student = dataSiswa.find(s => 
+                s.nisn === inputNisn && 
+                s.tglLahir.toLowerCase() === inputPass.toLowerCase()
+            );
+
+            if (student) {
+                errorMessage.style.display = 'none';
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('result-section').classList.remove('hidden');
+
+                // Memasukkan data ke dalam halaman HTML
+                document.getElementById('student-name').innerText = student.nama;
+                document.getElementById('student-nisn').innerText = student.nisn;
+                document.getElementById('score-math').innerText = student.nilaiMtk;
+                document.getElementById('cat-math').innerText = student.katMtk;
+                document.getElementById('score-indo').innerText = student.nilaiIndo;
+                document.getElementById('cat-indo').innerText = student.katIndo;
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            // Reset input form
+            document.getElementById('nisn').value = '';
+            document.getElementById('password').value = '';
+            
+            // Mengembalikan tampilan
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('result-section').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
